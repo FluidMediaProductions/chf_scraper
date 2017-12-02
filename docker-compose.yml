@@ -1,0 +1,38 @@
+version: "2"
+services:
+  scraper:
+    image: "evilben/chf-scraper:scraper"
+    restart: always
+    networks:
+      - scrapernet
+    environment:
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+  server:
+    image: "evilben/chf-scraper:server"
+    restart: always
+    ports:
+      - "8002:80"
+    networks:
+      - servernet
+    environment:
+      - GOOGLE_API_KEY=AIzaSyCmuyoiaaAFHO4PHtCFYzOUUEAlOPg1tvY
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+  nginx:
+    image: evilben/chf-scraper:nginx
+    ports:
+      - "8001:8001"
+    networks:
+      - servernet
+  mongo:
+    image: "mongo"
+    ports:
+      - "27017:27017"
+    restart: on-failure
+    networks:
+      - scrapernet
+      - servernet
+networks:
+  scrapernet:
+  servernet:

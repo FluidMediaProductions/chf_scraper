@@ -1,0 +1,7 @@
+pymongo
+flask
+flask-cors
+googlemaps
+haversine
+raven[flask]
+gunicorn

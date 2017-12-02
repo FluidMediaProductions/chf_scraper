@@ -1,0 +1,5 @@
+pymongo
+BeautifulSoup4
+requests
+extruct
+raven
