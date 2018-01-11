@@ -1,3 +1,4 @@
+import gc
 import bs4
 import requests
 import extruct
@@ -28,6 +29,11 @@ def get_properties(url):
         if "is-hidden" not in property_bs.parent["class"]:
             a = property_bs.find(class_="propertyCard-link")
             properties.append(a["href"])
+            del a
+    del r
+    del bs
+    del properties_bs
+    gc.collect()
     return properties
 
 
@@ -68,6 +74,16 @@ def get_property_details(url):
     if header_price_bs.find("small", class_="property-header-qualifier") is not None:
         if "Sold" in header_price_bs.find("small", class_="property-header-qualifier").text:
             data["sold"] = True
+    del r
+    del bs
+    del microdata
+    del header_price_bs
+    del pid
+    del floorplan_tab_bs
+    del loc_link
+    del loc_d
+    del features_bs
+    gc.collect()
     return data
 
 
@@ -85,6 +101,9 @@ def scrape(db):
             continue
         db.properties.insert_one(p_data)
         print("Inserted house id: %s" % str(p_data["id"]), flush=True)
+        del p_data
+    del properties
+    gc.collect()
 
 
 def timer():
@@ -103,6 +122,9 @@ def timer():
             if (time.time() - last_scrape) >= scrape_interval:
                 scrape(db)
                 db.scraper_config.update_one({"name": "last_scrape"}, {"$set": {"val": int(time.time())}})
+        del last_scrape
+        del scrape_interval
+        gc.collect()
         time.sleep(10)
 
 
