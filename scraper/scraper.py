@@ -11,7 +11,7 @@ from raven import Client
 # Read configuration from the ``SENTRY_DSN`` environment variable
 client = Client(dsn="https://9525e46e053b49828a6813d0276f1377:671f84a52c2b42569af47bb39d941198@sentry.io/208562")
 
-BASE_URL = "http://www.rightmove.co.uk"
+BASE_URL = "https://www.rightmove.co.uk"
 START_URL = "/property-for-sale/find/Crook-Hudson-and-Flynn/Magor.html?locationIdentifier=BRANCH%5E140102&includeSSTC=true&_includeSSTC=on"
 dbc = pymongo.MongoClient(os.environ.get("MONGO_HOST", "mongo"), int(os.environ.get("MONGO_PORT", 27017)))
 db = dbc.chf
@@ -61,7 +61,7 @@ def get_property_details(url):
             },
             "id": pid}
     for photo in microdata["photo"]:
-        data["photos"].append(photo["properties"]["contentUrl"])
+        data["photos"].append(photo["properties"]["contentUrl"].replace('http://', 'https://'))
     features_bs = bs.find(class_="key-features").ul.findAll("li")
     for feature_bs in features_bs:
         data["features"].append(feature_bs.text.strip())

@@ -1,4 +1,4 @@
-FROM python:3.5-slim
+FROM python:3.6-slim
 MAINTAINER Benjamin Misell <beninjam174@gmail.com>
 
 COPY requirements.txt /
