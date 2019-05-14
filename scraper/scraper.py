@@ -58,7 +58,8 @@ def get_property_details(url):
             "photos": [],
             "features": [],
             "price": header_price_bs.strong.text.strip(),
-            "desc": microdata["description"],
+            # change this "desc": microdata["description"], to "desc":[]
+            "desc": [],
             "floorplan": floorplan,
             "sold": False,
             "loc": {
@@ -66,6 +67,7 @@ def get_property_details(url):
                 "lng": float(loc_d["longitude"][0])
             },
             "id": pid}
+    print(data)
     for photo in microdata["photo"]:
         data["photos"].append(photo["properties"]["contentUrl"].replace('http://', 'https://'))
     features_bs = bs.find(class_="key-features").ul.findAll("li")
@@ -74,6 +76,10 @@ def get_property_details(url):
     if header_price_bs.find("small", class_="property-header-qualifier") is not None:
         if "Sold" in header_price_bs.find("small", class_="property-header-qualifier").text:
             data["sold"] = True
+    # add following lines to get description of house
+    for row in bs.findAll('div', attrs = {"class" : "sect"}):
+    	data["desc"].append(row.text)
+    #close	
     del r
     del bs
     del microdata
@@ -99,8 +105,9 @@ def scrape(db):
         p_data = get_property_details(p)
         if not p_data:
             continue
-        db.properties.insert_one(p_data)
+       	db.properties.insert_one(p_data)
         print("Inserted house id: %s" % str(p_data["id"]), flush=True)
+        print(str(p_data))
         del p_data
     del properties
     gc.collect()
@@ -130,6 +137,6 @@ def timer():
 
 if __name__ == '__main__':
     if os.environ.get("RUN_ONCE") == "1":
-        scrape(db)
+        scrape()
     else:
         timer()
